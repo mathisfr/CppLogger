@@ -55,8 +55,39 @@ int main() {
 [22:43:13] ‹ERROR›   Write error
 ```
 
-## Log Levels
+## Customizing Parameters
 
-* **LOGS_INFO**: Informational messages.  
-* **LOGS_WARNING**: Warning messages.  
-* **LOGS_ERROR**: Error messages.  
+Customizing the parameters of the logging system is simple and flexible. 
+You can adjust the parameters according to your needs by modifying the definitions in the CppLogger.hpp file.
+
+### Logging Levels
+
+The logging levels are defined by the following macros:
+
+- LOGS_INFO: For informational messages.
+- LOGS_WARNING: For warning messages.
+- LOGS_ERROR: For error messages.
+
+You can also customize the strings associated with each level by modifying the corresponding macros such as LOGS_INFO_STR, LOGS_WARNING_STR, and LOGS_ERROR_STR.
+
+### Header Style
+
+The header style of the log can be customized by adjusting the following macros:
+
+- LOGS_HEADER_BEFOREDECO: The character used before the logging level.
+- LOGS_HEADER_AFTERDECO: The character used after the logging level.
+- LOGS_HEADER_SPACE: The space between the logging level and the message.
+- LOGS_HEADER_MAXLEN: The maximum length of the log header.
+
+### Time Style
+
+The time style of the log can be customized by modifying the following macros:
+
+- LOGS_TIME_BEFOREDECO: The character used before the time.
+- LOGS_TIME_AFTERDECO: The character used after the time.
+
+### File Parameters
+
+File parameters are defined by the following macro:
+
+- LOGS_FILE_NAME: The name of the log file.
