@@ -1,7 +1,9 @@
 #include "CppLogger.hpp"
+#include<unistd.h> 
 int main(){
     /*  Not mandatory, but recommended for faster logging */
     CppLogger::init();
+
 
     /*  Enables / Disable logging to a file */
     CppLogger::toogleJournaling();  //  Enable
