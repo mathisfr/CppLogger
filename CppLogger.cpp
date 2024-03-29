@@ -28,7 +28,7 @@ static void canWrite(){
     if(!CppLogger::bJournaling) return;
     if (CppLogger::bJournaling && logsFileForCheck.good()) return;
     CppLogger::toogleJournaling();
-    CppLogger::tprint(LOGS_ERROR, "Impossible to write log to file, reopening in progress");
+    CppLogger::tprint(LOGS_ERROR, "Unable to write log to file; attempting to reopen the file.");
     CppLogger::toogleJournaling();
 }
 
@@ -112,15 +112,19 @@ void CppLogger::tprint(const char LOGS_LEVEL, const std::string str){
 
 void CppLogger::toogleJournaling(){
     if (!bJournaling){
-        FILE* pFile = fopen(LOGS_FILE_NAME, "w");
+        FILE* pFile = fopen(LOGS_FILE_NAME, "a");
         if (pFile){
-            logsFile = std::ofstream(LOGS_FILE_NAME, std::ios::app);
+            logsFile = std::ofstream(LOGS_FILE_NAME, std::ios::out | std::ios::app);
             if (logsFile.is_open()){
                 coutBufOg = std::cout.rdbuf();
                 std::cout.rdbuf(logsFile.rdbuf());
                 bJournaling = true;
+            }else{
+                CppLogger::tprint(LOGS_ERROR, "Unable to open the file");
             }
             fclose(pFile);
+        }else{
+            CppLogger::tprint(LOGS_ERROR, "Unable to open or create the file");
         }
     }else{
         std::cout.rdbuf(coutBufOg);
