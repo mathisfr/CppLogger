@@ -47,12 +47,12 @@ int main() {
 ## Example Output
 
 ```log
-‹INFO› Write info
+‹INFO›    Write info
 ‹WARNING› Write warning
-‹ERROR› Write error
-[22:43:13] ‹INFO› Write info
+‹ERROR›   Write error
+[22:43:13] ‹INFO›    Write info
 [22:43:13] ‹WARNING› Write warning
-[22:43:13] ‹ERROR› Write error
+[22:43:13] ‹ERROR›   Write error
 ```
 
 ## Log Levels
