@@ -1,4 +1,4 @@
-Journaling Application
+## Journaling Application
 
 This is a simple C++ logging library for journaling messages with various log levels such as INFO, WARNING, and ERROR. It provides functionality to log messages to the console as well as to a file.
 
