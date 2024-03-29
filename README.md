@@ -57,7 +57,7 @@ int main() {
 
 ## Customizing Parameters
 
-Customizing the parameters of the logging system is simple and flexible. 
+Customizing the parameters of the logging system is simple and flexible.  
 You can adjust the parameters according to your needs by modifying the definitions in the CppLogger.hpp file.
 
 ### Logging Levels
