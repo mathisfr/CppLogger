@@ -19,6 +19,7 @@ int CppLogger::headerSpace = 5;
 
 std::streambuf* CppLogger::coutBufOg;
 std::ofstream CppLogger::logsFile;
+std::ostringstream CppLogger::logBuffer;
 
 std::string CppLogger::currentName;
 
@@ -33,8 +34,8 @@ void CppLogger::canWrite(){
 
 void CppLogger::initPrint(){
     !CppLogger::currentName.empty() ?
-                        (std::cout << "==== CppLogger [" << CppLogger::currentName << "] ====" << std::endl)
-                        : (std::cout << "==== CppLogger ====" << std::endl);
+                        (std::cout << "==== CppLogger [" << CppLogger::currentName << "] ====\n")
+                        : (std::cout << "==== CppLogger ====\n");
 }
 
 void CppLogger::init(){
@@ -75,7 +76,7 @@ void CppLogger::printInfoHeader(const std::string header_str){
 
     int spaceWidth = maxWidth - headerWidth;
 
-    std::cout << oss.str() << std::setw(spaceWidth) << std::right << "";
+    CppLogger::logBuffer << oss.str() << std::setw(spaceWidth) << std::right << "";
 }
 
 void CppLogger::print(const char LOGS_LEVEL, const std::string str){
@@ -85,7 +86,8 @@ void CppLogger::print(const char LOGS_LEVEL, const std::string str){
     if (CppLogger::LevelArray.find(LOGS_LEVEL) != CppLogger::LevelArray.end()){
         const std::string header = it->second;
         printInfoHeader(header);
-        std::cout << str << std::endl;
+        std::cout << CppLogger::logBuffer.str() << str << '\n';
+        CppLogger::logBuffer.str("");
     }
 }
 
@@ -96,7 +98,7 @@ void CppLogger::tprint(const char LOGS_LEVEL, const std::string str){
     char timeBuffer[maxBufferTimeLenght];
     strftime(timeBuffer, maxBufferTimeLenght, "%T", std::localtime(&nowTime));
     canWrite();
-    std::cout << "[" << timeBuffer << "]\u2002";
+    CppLogger::logBuffer << "[" << timeBuffer << "]\u2002";
     CppLogger::print(LOGS_LEVEL, str);
 }
 

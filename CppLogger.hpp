@@ -57,6 +57,8 @@ private:
     static int headerMaxSize; /*! <Default 9 = LOGS_HEADER_BEFOREDECO + LOGS_WARNING_STR + LOGS_HEADER_AFTERDECO> */
     static int headerSpace;
 
+    static std::ostringstream logBuffer;
+    
     /**
      * @brief   Displays the log header correctly
      * 
