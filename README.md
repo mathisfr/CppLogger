@@ -52,9 +52,9 @@ int main() {
 
 ```log
 ==== CppLogger [DEBUG#1] ====
-[13:30:32] ‹INFO›    Write info
+[13:57:49] ‹INFO›    This is another informational message after disabling journaling
 ==== CppLogger [DEBUG#2] ====
-[13:30:32] ‹OTHER TEST› Write other test
+[13:57:49] ‹OTHER TEST› This is a message with a new custom log level (OTHER TEST)
 ```
 
 # Default Logs Levels

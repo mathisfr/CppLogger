@@ -26,9 +26,9 @@ void CppLogger::canWrite(){
     const std::ifstream logsFileForCheck = std::ifstream(LOGS_FILE_NAME);
     if(!CppLogger::bJournaling) return;
     if (CppLogger::bJournaling && logsFileForCheck.good()) return;
-    CppLogger::toogleJournaling();
+    CppLogger::toggleJournaling();
     CppLogger::tprint(LOGS_ERROR, "Unable to write log to file; attempting to reopen the file.");
-    CppLogger::toogleJournaling();
+    CppLogger::toggleJournaling();
 }
 
 void CppLogger::initPrint(){
