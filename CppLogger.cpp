@@ -2,7 +2,7 @@
  * @file CppLogger.cpp
  * @author Mathis Francois
  * @brief CPP file for the log system
- * @version 0.1
+ * @version 0.12
  * @date 2024-03-29
  * 
  * @copyright Copyright (c) 2024

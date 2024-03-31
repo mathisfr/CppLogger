@@ -57,7 +57,7 @@ int main() {
 [13:30:32] ‹OTHER TEST› Write other test
 ```
 
-# Default Log Level
+# Default Logs Levels
 * LOGS_INFO: Informational messages.
 * LOGS_WARNING: Warning messages.
 * LOGS_ERROR: Error messages.
