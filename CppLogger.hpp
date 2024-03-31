@@ -55,10 +55,10 @@ class CppLogger
 private:
     static std::map<char, std::string> LevelArray;
     static int headerMaxSize; /*! <Default 9 = LOGS_HEADER_BEFOREDECO + LOGS_WARNING_STR + LOGS_HEADER_AFTERDECO> */
-    static int headerSpace;
+    static int headerSpace; 
 
-    static std::ostringstream logBuffer;
-    
+    static std::ostringstream logBuffer; /*! <To use std::cout only once> */
+
     /**
      * @brief   Displays the log header correctly
      * 
