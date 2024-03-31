@@ -16,27 +16,25 @@
 #include <string>
 #include <iomanip>
 #include <fstream> 
+#include <map>
 
 /**
  * @brief   LOGS_LEVEL
  * 
  */
-#define LOGS_INFO 0x1
+#define LOGS_INFO 0x0
 #define LOGS_INFO_STR "INFO"
-#define LOGS_WARNING 0x2
+#define LOGS_WARNING 0x1
 #define LOGS_WARNING_STR "WARNING"
-#define LOGS_ERROR 0x4
+#define LOGS_ERROR 0x2
 #define LOGS_ERROR_STR "ERROR"
 
 /**
  * @brief   LOGS HEADER STYLE
- *  LOGS_HEADER_MAXLEN must be adjusted if you want your "LOGS_HEADER_BEFOREDECO" and "LOGS_HEADER_AFTERDECO"
- *  to be more than two characters long and if "LOGS_WARNING_STR" is no longer the largest possible word
+ * 
  */
 #define LOGS_HEADER_AFTERDECO "\u203A"
 #define LOGS_HEADER_BEFOREDECO "\u2039"
-#define LOGS_HEADER_SPACE 5
-#define LOGS_HEADER_MAXLEN 9 /*! <9 = LOGS_HEADER_BEFOREDECO + LOGS_WARNING_STR + LOGS_HEADER_AFTERDECO> */
 
 /**
  * @brief   LOGS TIME STYLE
@@ -51,8 +49,35 @@
  */
 #define LOGS_FILE_NAME "logs.txt"
 
+typedef void (*logsLevelFunc)(std::string str);
 class CppLogger
 {
+private:
+    static std::map<char, std::string> LevelArray;
+    static int headerMaxSize; /*! <Default 9 = LOGS_HEADER_BEFOREDECO + LOGS_WARNING_STR + LOGS_HEADER_AFTERDECO> */
+    static int headerSpace;
+
+    /**
+     * @brief   Displays the log header correctly
+     * 
+     * @param header_str 
+     */
+    static void printInfoHeader(const std::string header_str);
+
+    /**
+     * @brief   Check whether you can write to the output buffer,
+     *          because if file logging is active and the file does not exist,
+     *          you must return an error on standard output.
+     * 
+     */
+    static void canWrite();
+
+    static void initPrint();
+
+    static std::streambuf* coutBufOg; /*! <For save cout buffer original>*/
+    static std::ofstream logsFile; /*! <For open and write in file>*/
+
+    static std::string currentName;
 public:
     CppLogger() = delete;
     ~CppLogger() = delete;
@@ -62,13 +87,14 @@ public:
      * 
      */
     static void init();
+    static void init(std::string name);
     static bool bInit;
 
     /**
      * @brief   Enables or disables logging to a file
      * 
      */
-    static void toogleJournaling();
+    static void toggleJournaling();
     static bool bJournaling;
 
     /**
@@ -87,5 +113,27 @@ public:
      */
     static void tprint(const char LOGS_LEVEL, const std::string str);
 
+    /**
+     * @brief Add or modify a debug level
+     * 
+     * @param levelId 
+     * @param level 
+     */
+    static void updateLevel(const char levelId, const std::string level);
+
+    /**
+     * @brief Change the name of the current debug section
+     * 
+     * @param name 
+     */
+    static void updateLogName(const std::string name);
+
+    /**
+     * @brief Set the Header Space object
+     * 
+     * @param spaceSize 
+     */
+    static void setHeaderSpace(const int spaceSize);
 };
 
+typedef CppLogger CL;

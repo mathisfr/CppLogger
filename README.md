@@ -14,32 +14,36 @@ Here's how you can use the logging library in your C++ application:
 #include "CppLogger.hpp"
 
 int main() {
-    // Initialize the logger (not mandatory, but recommended for faster logging)
-    CppLogger::init();
+    // Initialize the logger with a log name
+    CL::init("DEBUG#1");
 
-    // Enable or disable logging to a file
-    CppLogger::toggleJournaling(); // Enable journaling
+    // Toggle logging to a file
+    CL::toggleJournaling();
 
-    // Log messages with different log levels
-    CppLogger::print(LOGS_INFO, "Write info");
-    CppLogger::print(LOGS_WARNING, "Write warning");
-    CppLogger::print(LOGS_ERROR, "Write error");
+    // Log various messages with different severity levels
+    CL::print(LOGS_INFO, "This is an informational message");
+    CL::print(LOGS_WARNING, "This is a warning message");
+    CL::print(LOGS_ERROR, "This is an error message");
 
     // Log messages with timestamps
-    CppLogger::tprint(LOGS_INFO, "Write info");
-    CppLogger::tprint(LOGS_WARNING, "Write warning");
-    CppLogger::tprint(LOGS_ERROR, "Write error");
+    CL::tprint(LOGS_INFO, "This is a timestamped informational message");
+    CL::tprint(LOGS_WARNING, "This is a timestamped warning message");
+    CL::tprint(LOGS_ERROR, "This is a timestamped error message");
 
-    // Disable journaling
-    CppLogger::toggleJournaling();
+    // Update log level for a custom level
+    CL::updateLevel(3, "OTHER");
+    CL::tprint(3, "This is a message with custom log level (OTHER)");
 
-    // Log messages standard output
-    CppLogger::print(LOGS_INFO, "Write info");
-    CppLogger::print(LOGS_WARNING, "Write warning");
-    CppLogger::print(LOGS_ERROR, "Write error");
-    CppLogger::tprint(LOGS_INFO, "Write info");
-    CppLogger::tprint(LOGS_WARNING, "Write warning");
-    CppLogger::tprint(LOGS_ERROR, "Write error");
+    // Disable logging to a file
+    CL::toggleJournaling();
+
+    // Log another informational message after disabling journaling
+    CL::tprint(LOGS_INFO, "This is another informational message after disabling journaling");
+
+    // Add another log level
+    CL::updateLogName("DEBUG#2"); // Change log name
+    CL::updateLevel(4, "OTHER TEST"); // Add another custom log level
+    CL::tprint(4, "This is a message with a new custom log level (OTHER TEST)");
 
     return 0;
 }
@@ -47,47 +51,41 @@ int main() {
 ## Example Output
 
 ```log
-‹INFO›    Write info
-‹WARNING› Write warning
-‹ERROR›   Write error
-[22:43:13] ‹INFO›    Write info
-[22:43:13] ‹WARNING› Write warning
-[22:43:13] ‹ERROR›   Write error
+==== CppLogger [DEBUG#1] ====
+[13:30:32] ‹INFO›    Write info
+==== CppLogger [DEBUG#2] ====
+[13:30:32] ‹OTHER TEST› Write other test
 ```
 
-## Customizing Parameters
+# Default Log Level
+* LOGS_INFO: Informational messages.
+* LOGS_WARNING: Warning messages.
+* LOGS_ERROR: Error messages.
+  
+# Customize
+You can change the space between the level text and the message with :
+```cpp
+void setHeaderSpace(const int spaceSize);
+```
+You can change the name of the log file with :
+```cpp
+#define LOGS_FILE_NAME "logs.txt"
+```
+You can change the style of the characters surrounding the name of the log level and timestamps with :
+```cpp
+//  Log level name decorator
+#define LOGS_HEADER_AFTERDECO "\u203A"
+#define LOGS_HEADER_BEFOREDECO "\u2039"
 
-Customizing the parameters of the logging system is simple and flexible.  
-You can adjust the parameters according to your needs by modifying the definitions in the CppLogger.hpp file.
-
-### Logging Levels
-
-The logging levels are defined by the following macros:
-
-- LOGS_INFO: For informational messages.
-- LOGS_WARNING: For warning messages.
-- LOGS_ERROR: For error messages.
-
-You can also customize the strings associated with each level by modifying the corresponding macros such as LOGS_INFO_STR, LOGS_WARNING_STR, and LOGS_ERROR_STR.
-
-### Header Style
-
-The header style of the log can be customized by adjusting the following macros:
-
-- LOGS_HEADER_BEFOREDECO: The character used before the logging level.
-- LOGS_HEADER_AFTERDECO: The character used after the logging level.
-- LOGS_HEADER_SPACE: The space between the logging level and the message.
-- LOGS_HEADER_MAXLEN: The maximum length of the log header.
-
-### Time Style
-
-The time style of the log can be customized by modifying the following macros:
-
-- LOGS_TIME_BEFOREDECO: The character used before the time.
-- LOGS_TIME_AFTERDECO: The character used after the time.
-
-### File Parameters
-
-File parameters are defined by the following macro:
-
-- LOGS_FILE_NAME: The name of the log file.
+//  Timestamps decorator
+#define LOGS_TIME_AFTERDECO "]"
+#define LOGS_TIME_BEFOREDECO "["
+```
+***Warning ! If you add decorators longer than 1 character, you will have to adjust the line of code in :***
+```cpp
+void CppLogger::updateLevel(const char levelId, const std::string levelStr){
+    ...
+    const int headerSize = levelStr.size() + 2; // << HERE (+2 Because there are only 2 characters surrounding the log level name)
+    ...
+}
+```

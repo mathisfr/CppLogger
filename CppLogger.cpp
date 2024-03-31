@@ -13,18 +13,17 @@
 bool CppLogger::bInit = false;
 bool CppLogger::bJournaling = false;
 
-static std::streambuf* coutBufOg = nullptr; /*! <For save cout buffer original>*/
-static std::ofstream logsFile; /*! <For open and write in file>*/
-static std::ifstream logsFileForCheck; /*! <For check if file exist>*/
+std::map<char, std::string> CppLogger::LevelArray;
+int CppLogger::headerMaxSize = 9;
+int CppLogger::headerSpace = 5;
 
-/**
- * @brief   Check whether you can write to the output buffer,
- *          because if file logging is active and the file does not exist,
- *          you must return an error on standard output.
- * 
- */
-static void canWrite(){
-    logsFileForCheck = std::ifstream(LOGS_FILE_NAME);
+std::streambuf* CppLogger::coutBufOg;
+std::ofstream CppLogger::logsFile;
+
+std::string CppLogger::currentName;
+
+void CppLogger::canWrite(){
+    const std::ifstream logsFileForCheck = std::ifstream(LOGS_FILE_NAME);
     if(!CppLogger::bJournaling) return;
     if (CppLogger::bJournaling && logsFileForCheck.good()) return;
     CppLogger::toogleJournaling();
@@ -32,26 +31,46 @@ static void canWrite(){
     CppLogger::toogleJournaling();
 }
 
+void CppLogger::initPrint(){
+    !CppLogger::currentName.empty() ?
+                        (std::cout << "==== CppLogger [" << CppLogger::currentName << "] ====" << std::endl)
+                        : (std::cout << "==== CppLogger ====" << std::endl);
+}
+
 void CppLogger::init(){
     if (CppLogger::bInit){
         canWrite();
         return CppLogger::print(LOGS_ERROR, "CppLogger is already initialized");
     }
+    CppLogger::LevelArray[LOGS_ERROR] = std::string(LOGS_ERROR_STR);
+    CppLogger::LevelArray[LOGS_WARNING] = std::string(LOGS_WARNING_STR);
+    CppLogger::LevelArray[LOGS_INFO] = std::string(LOGS_INFO_STR);
     std::ios::sync_with_stdio(false);
+    CppLogger::initPrint();
     CppLogger::bInit = true;
 }
 
-/**
- * @brief   Displays the log header correctly
- * 
- * @param header_str 
- */
-static void printInfoHeader(const std::string header_str){
+void CppLogger::init(std::string name){
+    if (CppLogger::bInit){
+        canWrite();
+        return CppLogger::print(LOGS_ERROR, "CppLogger is already initialized");
+    }
+    CppLogger::LevelArray[LOGS_ERROR] = std::string(LOGS_ERROR_STR);
+    CppLogger::LevelArray[LOGS_WARNING] = std::string(LOGS_WARNING_STR);
+    CppLogger::LevelArray[LOGS_INFO] = std::string(LOGS_INFO_STR);
+    std::ios::sync_with_stdio(false);
+    CppLogger::currentName = name;
+    CppLogger::initPrint();
+    CppLogger::bInit = true;
+}
+
+
+void CppLogger::printInfoHeader(const std::string header_str){
     std::ostringstream oss;
 
     oss << LOGS_HEADER_BEFOREDECO << header_str << LOGS_HEADER_AFTERDECO;
 
-    int maxWidth = LOGS_HEADER_MAXLEN + LOGS_HEADER_SPACE;
+    int maxWidth = CppLogger::headerMaxSize + CppLogger::headerSpace;
     int headerWidth = oss.str().size();
 
     int spaceWidth = maxWidth - headerWidth;
@@ -59,48 +78,19 @@ static void printInfoHeader(const std::string header_str){
     std::cout << oss.str() << std::setw(spaceWidth) << std::right << "";
 }
 
-/**
- * @brief   Write information in the log
- * 
- * @param str 
- */
-static void printInfo(const std::string str){
-    printInfoHeader(LOGS_INFO_STR);
-    std::cout << str << std::endl;
-}
-/**
- * @brief   Write warning in the log
- * 
- * @param str 
- */
-static void printWarning(const std::string str){
-    printInfoHeader(LOGS_WARNING_STR);
-    std::cout << str << std::endl;
-}
-/**
- * @brief   Write error in the log
- * 
- * @param str 
- */
-static void printError(const std::string str){
-    printInfoHeader(LOGS_ERROR_STR);
-    std::cout << str << std::endl;
-}
-
 void CppLogger::print(const char LOGS_LEVEL, const std::string str){
+    if (!CppLogger::bInit) return;
     canWrite();
-    if (LOGS_LEVEL & LOGS_INFO){
-        printInfo(str);
-    }else
-    if(LOGS_LEVEL & LOGS_WARNING){
-        printWarning(str);
-    }else
-    if(LOGS_LEVEL & LOGS_ERROR){
-        printError(str);
+    std::map<char, std::string>::const_iterator it = CppLogger::LevelArray.find(LOGS_LEVEL);
+    if (CppLogger::LevelArray.find(LOGS_LEVEL) != CppLogger::LevelArray.end()){
+        const std::string header = it->second;
+        printInfoHeader(header);
+        std::cout << str << std::endl;
     }
 }
 
 void CppLogger::tprint(const char LOGS_LEVEL, const std::string str){
+    if (!CppLogger::bInit) return;
     std::time_t nowTime = std::time(nullptr);
     constexpr int maxBufferTimeLenght = 9;
     char timeBuffer[maxBufferTimeLenght];
@@ -110,7 +100,8 @@ void CppLogger::tprint(const char LOGS_LEVEL, const std::string str){
     CppLogger::print(LOGS_LEVEL, str);
 }
 
-void CppLogger::toogleJournaling(){
+void CppLogger::toggleJournaling(){
+    if (!CppLogger::bInit) return;
     if (!bJournaling){
         FILE* pFile = fopen(LOGS_FILE_NAME, "a");
         if (pFile){
@@ -119,6 +110,7 @@ void CppLogger::toogleJournaling(){
                 coutBufOg = std::cout.rdbuf();
                 std::cout.rdbuf(logsFile.rdbuf());
                 bJournaling = true;
+
             }else{
                 CppLogger::tprint(LOGS_ERROR, "Unable to open the file");
             }
@@ -133,4 +125,28 @@ void CppLogger::toogleJournaling(){
         }
         bJournaling = false;
     }
+}
+
+void CppLogger::updateLevel(const char levelId, const std::string levelStr){
+    if (!CppLogger::bInit) return;
+    if (levelId < 0 || (levelId >= 0 && levelId <= 2)){
+        CppLogger::tprint(LOGS_ERROR, "The LevelID is incorrect or being used by a default LevelID");
+        return;
+    }
+    CppLogger::LevelArray[levelId] = levelStr;
+    const int headerSize = levelStr.size() + 2;
+    if (headerSize > CppLogger::headerMaxSize) CppLogger::headerMaxSize = headerSize;
+}
+
+void CppLogger::setHeaderSpace(const int spaceSize){
+    if (spaceSize < 0){
+        CppLogger::tprint(LOGS_ERROR, "The header spacing cannot be negative");
+        return;
+    }
+    CppLogger::headerSpace = spaceSize;
+}
+
+void CppLogger::updateLogName(const std::string name){
+    CppLogger::currentName = name;
+    CppLogger::initPrint();
 }
