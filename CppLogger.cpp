@@ -110,7 +110,7 @@ void CppLogger::toggleJournaling(){
                 coutBufOg = std::cout.rdbuf();
                 std::cout.rdbuf(logsFile.rdbuf());
                 bJournaling = true;
-
+                CppLogger::initPrint();
             }else{
                 CppLogger::tprint(LOGS_ERROR, "Unable to open the file");
             }
