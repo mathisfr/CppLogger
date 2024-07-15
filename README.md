@@ -2,6 +2,10 @@
 
 This is a simple C++ logging library for journaling messages with various log levels such as INFO, WARNING, and ERROR. It provides functionality to log messages to the console as well as to a file.
 
+## Check List for future contentes
+- [ ] Show Process Id
+- [ ] Show Thread Id
+
 ## Installation
 
 To use this logging library in your project, simply include the CppLogger.hpp header file and ensure that the CppLogger.cpp implementation file is compiled along with your project.
