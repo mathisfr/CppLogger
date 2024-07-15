@@ -2,7 +2,7 @@
 
 This is a simple C++ logging library for journaling messages with various log levels such as INFO, WARNING, and ERROR. It provides functionality to log messages to the console as well as to a file.
 
-## Check List for updates
+## Check List for updates ideas
 - [ ] Show Process Id
 - [ ] Show Thread Id
 
