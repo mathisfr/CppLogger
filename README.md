@@ -5,6 +5,7 @@ This is a simple C++ logging library for journaling messages with various log le
 ## Check List for updates ideas
 - [ ] Show Process Id
 - [ ] Show Thread Id
+- [ ] Upgrade to modern CPP
 
 ## Installation
 
